@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charityproject import charity_project_crud
+from app.models import Donation
 from app.schemas.charityproject import (
     CharityProjectCreate, CharityProjectDB, CharityProjectUpdate
 )
@@ -15,6 +16,7 @@ from app.api.validators import (
     check_full_amount_is_less_than_invested,
     check_project_is_fully_invested
 )
+from app.services.invest import investing_process
 
 router = APIRouter()
 
@@ -51,7 +53,9 @@ async def create_charity_project(
         charity_project.name, session
     )
     check_charity_project_name_duplicate(charity_project.name, project)
-    return await charity_project_crud.create(charity_project, session)
+    new_project = await charity_project_crud.create(charity_project, session)
+    await investing_process(new_project, Donation, session)
+    return new_project
 
 
 @router.patch(
