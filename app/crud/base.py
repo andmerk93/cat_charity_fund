@@ -1,10 +1,10 @@
-# from typing import Optional
+from typing import Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# from app.models import User
+from app.models import User
 
 
 class CRUDBase:
@@ -35,13 +35,13 @@ class CRUDBase:
             self,
             obj_in,
             session: AsyncSession,
-            # user: Optional[User] = None
+            user: Optional[User] = None
     ):
         obj_in_data = obj_in.dict()
-#        # Если пользователь был передан...
-#        if user is not None:
-#            # ...то дополнить словарь для создания модели.
-#            obj_in_data['user_id'] = user.id
+        # Если пользователь был передан...
+        if user is not None:
+            # ...то дополнить словарь для создания модели.
+            obj_in_data['user_id'] = user.id
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)
         await session.commit()

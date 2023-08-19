@@ -11,11 +11,12 @@ class CharityProject(BaseModel):
 
     class Config:
         extra = Extra.forbid
+        orm_mode = True
 
 
 class CharityProjectCreate(CharityProject):
     name: str = Field(..., min_length=1, max_length=100)
-    description: str
+    description: str = Field(..., min_length=1)
     full_amount: PositiveInt
 
 
@@ -32,6 +33,3 @@ class CharityProjectDB(CharityProjectCreate):
     fully_invested: bool
     create_date: datetime
     close_date: Optional[datetime]
-
-    class Config:
-        orm_mode = True

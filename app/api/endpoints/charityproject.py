@@ -8,6 +8,9 @@ from app.crud.charityproject import charity_project_crud
 from app.schemas.charityproject import (
     CharityProjectCreate, CharityProjectDB, CharityProjectUpdate
 )
+from app.api.validators import (
+    check_charity_project_name_duplicate
+)
 
 router = APIRouter()
 
@@ -15,6 +18,7 @@ router = APIRouter()
 @router.get(
     '/',
     response_model=List[CharityProjectDB],
+    response_model_exclude_none=True,
 )
 async def get_all_charity_projects(
     session: AsyncSession = Depends(get_async_session),
@@ -26,8 +30,9 @@ async def get_all_charity_projects(
 
 @router.post(
     '/',
-    response_model=CharityProjectCreate,
+    response_model=CharityProjectDB,
     dependencies=[Depends(current_superuser)],
+    response_model_exclude_none=True,
 )
 async def create_charity_project(
     charity_project: CharityProjectCreate,
@@ -38,7 +43,8 @@ async def create_charity_project(
 
     Создает благотворительный проект.
     """
-    new_charity_project = await charity_project_crud.create(charity_project, session)
+    await check_charity_project_name_duplicate(charity_project.name, session)
+    new_charity_project = await charity_project_crud.create(charity_project, session)  # noqa
     return new_charity_project
 
 
