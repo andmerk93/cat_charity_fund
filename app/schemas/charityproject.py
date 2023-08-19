@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
-from pydantic import BaseModel, Extra, Field, PositiveInt
+from pydantic import BaseModel, Extra, Field, PositiveInt, validator
 
 
 class CharityProject(BaseModel):
@@ -21,7 +21,12 @@ class CharityProjectCreate(CharityProject):
 
 
 class CharityProjectUpdate(CharityProject):
-    pass
+
+    @validator('name', 'description', 'full_amount')
+    def field_not_empty(cls, value: Union[str, int]):
+        if not value:
+            raise ValueError('Поле не может быть пустым')
+        return value
 
 
 class CharityProjectDB(CharityProjectCreate):

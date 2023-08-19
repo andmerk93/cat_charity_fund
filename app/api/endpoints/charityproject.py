@@ -9,7 +9,11 @@ from app.schemas.charityproject import (
     CharityProjectCreate, CharityProjectDB, CharityProjectUpdate
 )
 from app.api.validators import (
-    check_charity_project_name_duplicate
+    check_charity_project_name_duplicate,
+    check_charity_project_exists,
+    check_project_is_investing,
+    check_full_amount_is_less_than_invested,
+    check_project_is_fully_invested
 )
 
 router = APIRouter()
@@ -43,9 +47,11 @@ async def create_charity_project(
 
     Создает благотворительный проект.
     """
-    await check_charity_project_name_duplicate(charity_project.name, session)
-    new_charity_project = await charity_project_crud.create(charity_project, session)  # noqa
-    return new_charity_project
+    project = await charity_project_crud.get_project_by_name(
+        charity_project.name, session
+    )
+    check_charity_project_name_duplicate(charity_project.name, project)
+    return await charity_project_crud.create(charity_project, session)
 
 
 @router.patch(
@@ -55,7 +61,7 @@ async def create_charity_project(
 )
 async def update_charity_project(
     project_id: int,
-    obj_in: CharityProjectUpdate,
+    charity_project: CharityProjectUpdate,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -64,7 +70,21 @@ async def update_charity_project(
     Закрытый проект нельзя редактировать,
     также нельзя установить требуемую сумму меньше уже вложенной.
     """
-    pass
+    project_by_id = await charity_project_crud.get(project_id, session)
+    check_charity_project_exists(project_by_id)
+    check_project_is_fully_invested(project_by_id)
+    check_full_amount_is_less_than_invested(
+        charity_project.full_amount, project_by_id.invested_amount
+    )
+    check_charity_project_name_duplicate(charity_project.name, project_by_id)
+    project_by_name = await charity_project_crud.get_project_by_name(
+        charity_project.name, session
+    )
+    check_charity_project_name_duplicate(charity_project.name, project_by_name)
+    project = await charity_project_crud.update(
+        project_by_id, charity_project, session
+    )
+    return project
 
 
 @router.delete(
@@ -84,5 +104,6 @@ async def delete_charity_project(
     его можно только закрыть.
     """
     project = await charity_project_crud.get(project_id, session)
+    check_project_is_investing(project)
     project = await charity_project_crud.remove(project, session)
     return project

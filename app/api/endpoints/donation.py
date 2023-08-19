@@ -49,7 +49,7 @@ async def create_donation(
 
 
 @router.get(
-    '/me',
+    '/my',
     response_model=List[DonationDB],
     dependencies=[Depends(current_user)],
 )
