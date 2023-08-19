@@ -1,8 +1,8 @@
-"""init_models
+"""make_models
 
 Revision ID: 01
 Revises: 
-Create Date: 2023-08-19 04:15:24.148651
+Create Date: 2023-08-19 23:15:31.467042
 
 """
 from alembic import op
