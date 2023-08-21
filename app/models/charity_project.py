@@ -8,4 +8,7 @@ class CharityProject(CharityBaseModel):
     description = Column(Text, nullable=False)
 
     def __repr__(self):
-        return super().__repr__()
+        return super(
+            f'name={self.name},'
+            f'description={self.description}'
+        ).__repr__()
