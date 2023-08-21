@@ -2,7 +2,7 @@
 
 Revision ID: 01
 Revises: 
-Create Date: 2023-08-19 23:15:31.467042
+Create Date: 2023-08-21 09:03:17.563244
 
 """
 from alembic import op
@@ -27,6 +27,8 @@ def upgrade():
     sa.Column('close_date', sa.DateTime(), nullable=True),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('description', sa.Text(), nullable=False),
+    sa.CheckConstraint('full_amount >= 0'),
+    sa.CheckConstraint('invested_amount <= full_amount'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -50,6 +52,8 @@ def upgrade():
     sa.Column('close_date', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('comment', sa.Text(), nullable=True),
+    sa.CheckConstraint('full_amount >= 0'),
+    sa.CheckConstraint('invested_amount <= full_amount'),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
