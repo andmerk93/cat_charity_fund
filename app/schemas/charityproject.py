@@ -5,18 +5,19 @@ from pydantic import BaseModel, Extra, Field, PositiveInt, validator
 
 
 class CharityProject(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    name: Optional[str] = Field(None, max_length=100)
     description: Optional[str]
     full_amount: Optional[PositiveInt]
 
     class Config:
         extra = Extra.forbid
         orm_mode = True
+        min_anystr_length = 1
 
 
 class CharityProjectCreate(CharityProject):
-    name: str = Field(..., min_length=1, max_length=100)
-    description: str = Field(..., min_length=1)
+    name: str = Field(..., max_length=100)
+    description: str
     full_amount: PositiveInt
 
 
@@ -31,9 +32,6 @@ class CharityProjectUpdate(CharityProject):
 
 class CharityProjectDB(CharityProjectCreate):
     id: int
-    name: str = Field(..., min_length=1, max_length=100)
-    description: str
-    full_amount: PositiveInt
     invested_amount: int
     fully_invested: bool
     create_date: datetime

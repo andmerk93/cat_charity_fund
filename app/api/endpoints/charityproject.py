@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charityproject import charity_project_crud
-from app.models import Donation
 from app.schemas.charityproject import (
     CharityProjectCreate, CharityProjectDB, CharityProjectUpdate
 )
@@ -16,7 +15,7 @@ from app.api.validators import (
     check_full_amount_is_less_than_invested,
     check_project_is_fully_invested
 )
-from app.services.invest import investing_process
+from app.services.invest import investment
 
 router = APIRouter()
 
@@ -53,8 +52,12 @@ async def create_charity_project(
         charity_project.name, session
     )
     check_charity_project_name_duplicate(charity_project.name, project)
-    new_project = await charity_project_crud.create(charity_project, session)
-    await investing_process(new_project, Donation, session)
+    new_project = charity_project_crud.create_not_commit(charity_project)
+    session.add(new_project)
+    fill_models = await charity_project_crud.get_not_full_invested_objects(session) # noqa
+    invested_list = investment(new_project, fill_models)
+    await charity_project_crud.commit_models(invested_list, session)
+    await session.refresh(new_project)
     return new_project
 
 

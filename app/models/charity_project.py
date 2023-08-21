@@ -1,11 +1,9 @@
 from sqlalchemy import Column, String, Text
 
-from app.core.db import Base
-
-from .abstract_parent import AbstractParent
+from .charity_basemodel import CharityBaseModel
 
 
-class CharityProject(AbstractParent, Base):
+class CharityProject(CharityBaseModel):
     name = Column(String(100), unique=True, nullable=False)
     description = Column(Text, nullable=False)
 
