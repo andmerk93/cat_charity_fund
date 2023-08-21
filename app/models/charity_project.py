@@ -8,4 +8,4 @@ class CharityProject(CharityBaseModel):
     description = Column(Text, nullable=False)
 
     def __repr__(self):
-        return self.name
+        return super().__repr__()

@@ -1,10 +1,15 @@
 from datetime import datetime
+from typing import List, Union
+
+from app.models import CharityProject, Donation
+
+MODEL_TYPES = Union[CharityProject, Donation]
 
 
 def investment(
-    target,
-    sources
-):
+    target: MODEL_TYPES,
+    sources: List[MODEL_TYPES]
+) -> List[MODEL_TYPES]:
     list_modified = []
     if not target.invested_amount and target.invested_amount != 0:
         target.invested_amount = 0

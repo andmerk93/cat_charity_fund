@@ -115,7 +115,7 @@ pip install -r requirements.txt
 
 - затем, выполнить миграции
 ```
-alembic upgrade 01
+alembic upgrade head
 ```
 
 - запустить проект

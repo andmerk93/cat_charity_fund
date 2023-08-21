@@ -19,4 +19,4 @@ class CharityBaseModel(Base):
     close_date = Column(DateTime, default=None)
 
     def __repr__(self):
-        return self.__dict__
+        return str(self.__dict__)
