@@ -8,7 +8,8 @@ class Donation(CharityBaseModel):
     comment = Column(Text, nullable=True)
 
     def __repr__(self):
-        return super(
+        return (
+            f'{super().__repr__()},'
             f'user_id={self.user_id},'
             f'comment={self.comment}'
-        ).__repr__()
+        )
